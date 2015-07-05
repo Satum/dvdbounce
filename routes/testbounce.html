@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DVD Bounce</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
+    <link media="screen" rel="stylesheet" type="text/css" href="style.css" />
+    <!<link media="handheld, only screen and (max-width: 480px), only screen and (max-device-width: 480px)" href="mobile.css" type="text/css" rel="stylesheet" />
+    <!--[if IEMobile]>
+    <link rel="stylesheet" type="text/css" href="mobile.css" media="screen" />
+    <![endif]-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Lato|Open+Sans' rel='stylesheet'
+    type='text/css'>
+
+    <script type="text/javascript">
+    var canvas, context, imageObj;
+    var x = 0;
+    var y = 0;
+    var count = 0;
+    var dirX = 1;
+    var dirY = 1;
+    var imgWidth = 533/2; 
+    var imgHeight = 264/2;
+    var screenWidth, screenHeight;
+    var randomX, randomY;
+    var randomDirX, randomDirY;
+    var firstRun = true;
+    var fps = 30;
+    var interval = 1000/fps;
+
+
+    $(document).ready(inital);
+    $(document).resize(inital);
+    
+    function inital(){
+
+        canvas = $('#dvd_bounce_canvas');
+        context = canvas[0].getContext('2d');
+        screenWidth = $(window).outerWidth();
+        screenHeight = $(window).outerHeight();
+        canvas[0].width = screenWidth; 
+        canvas[0].height = screenHeight;
+        
+        randomX = Math.random()*(screenWidth - imgWidth);
+        randomY = Math.random()*(screenHeight - imgHeight);
+        
+        initialDir(Math.random(), Math.random());
+
+        console.log(randomX + " + " + randomY);
+        imageObj = new Image();
+        imageObj.onload = loadingComplete;
+        imageObj.src = 'DVD_logo-black1.jpg';
+
+    }
+
+    function initialDir(randomX,randomY){
+        if(randomX < 0.5){
+            dirX = -dirX;
+        }
+        if(randomY < 0.5){
+            dirY = -dirY;
+        }
+    }
+
+    function loadingComplete(e) {
+        // When the image has loaded begin the loop
+        setInterval(loop, 1);
+    }
+
+  function loop() {
+        // Each loop we move the image by altering its x/y position
+        
+        // Grab the context
+        var surfaceContext = context;
+
+        // Clear the canvas to black
+        surfaceContext.fillStyle = "rgb(255,255,255)";
+        surfaceContext.clearRect(0,0, canvas[0].width,canvas[0].height);
+ 
+        // Draw the image
+        if(firstRun){
+            surfaceContext.drawImage(imageObj, randomX, randomY,imgWidth,imgHeight);
+            x =randomX;
+            y= randomY;
+            firstRun=false;
+        }
+
+        surfaceContext.drawImage(imageObj, x, y,imgWidth,imgHeight);
+        
+        x += dirX;
+        y += dirY;
+
+        if (x <= 0 || x > canvas[0].width - imgWidth) {
+            dirX = -dirX;
+             console.log(x + " - " + y );
+        }
+        if (y <= 0 || y > canvas[0].height - imgHeight) {
+            dirY = -dirY;
+             console.log(x + " - " + y  + " / " + (screenWidth - imgWidth+1) + " - " + (screenHeight - imgHeight+1.5) );
+        }
+        
+        //context.fillStyle = "rgb( 0,255,0)";
+        //context.font = '15pt Open Sans';
+        //context.fillText('Corners Seen: ' + count, 5, 25);
+        $("#count").html("Corners Witnessed: " + count);
+        checkCorners(x,y);
+        surfaceContext.clearRect(0,0, canvas.width,canvas.height);
+    }
+
+    function checkCorners(x, y){
+        if(x === 0 && y === 0){
+            //alert("top left corner");
+            count++;
+        }
+        else if(x === screenWidth - imgWidth+1  && y === 0)
+            count++;
+        else if(x === 0 && y === screenHeight - imgHeight+1.5)
+            count++;
+        else if(x === (screenWidth - imgWidth+1) && y === (screenHeight - imgHeight+1.5))
+            count++;
+    }
+    function loadImage(src){
+         context.drawImage(imageObj, randomX, randomY, 300,200);
+    }
+
+    function redraw(x, y){
+
+    }
+    </script>
+</head>
+
+<body>
+<div id="count" align="center">test</div>
+<canvas id="dvd_bounce_canvas">
+
+</canvas>
+</body>
+
+</html>
