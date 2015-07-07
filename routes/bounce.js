@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('testbounce');
+  res.sendfile('./public/testbounce.html');
 });
 
 module.exports = router;
